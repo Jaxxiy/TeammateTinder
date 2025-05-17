@@ -1,10 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Title</title>
+  <title>Chat</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+
+    .chat-container {
+      width: 80%;
+      margin: 0 auto;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      height: 500px;
+      overflow-y: auto;
+    }
+
+    .message {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .message.sent {
+      background-color: #d4edda;
+      text-align: right;
+    }
+
+    .message.received {
+      background-color: #cce5ff;
+      text-align: left;
+    }
+
+    .message-form {
+      margin-top: 20px;
+      display: flex;
+    }
+
+    .message-input {
+      flex-grow: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    .send-button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
+
+<div class="chat-container">
+  <h2>Chat with User <span th:text="${otherUserId}"></span></h2>
+
+  <div id="messages">
+    <div th:each="message : ${messages}" class="message"
+         th:classappend="${message.senderId == currentUserId ? ' sent' : ' received'}">
+      <span th:text="${message.text}"></span>
+    </div>
+  </div>
+</div>
+
+<form class="message-form" th:action="@{/chat/send}" method="post">
+  <input type="hidden" name="chatId" th:value="${chatId}"/>
+  <input type="text" class="message-input" name="message" placeholder="Type your message...">
+  <button type="submit" class="send-button">Send</button>
+</form>
 
 </body>
 </html>

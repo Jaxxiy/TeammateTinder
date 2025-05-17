@@ -114,6 +114,9 @@
                 <span th:each="skill : ${skills}" class="skill-tag" th:text="${skill.getName()}"></span>
             </div>
         </div>
+        <div>
+            <a th:href="@{/chat}" class="chat-button">Send Message</a>
+        </div>
     </div>
 </div>
 </body>
