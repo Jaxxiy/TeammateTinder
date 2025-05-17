@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .tab-bar {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            background-color: #f0f0f0;
+        }
+
+        .tab.active {
+            background-color: #ddd;
+        }
+
+        .match-card {
+            width: 80%;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .image-container {
+            width: 100px;
+            height: 100px;
+            background-color: #eee;
+            border-radius: 10px;
+            margin-right: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+
+        .message-button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: small;
+        }
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>DevMatch</h1>
+
+    <div class="tab-bar">
+        <div class="tab">
+        <a th:href="@{/matchers/{profileId}(profileId=${profileId})}" >Matches</a>
+        </div>
+        <div class="tab active">Likes</a></div>
+        <div class="tab">
+        <a th:href="@{/features/{profileId}(profileId=${profileId})}">Favorites</a>
+        </div>
+    </div>
+
+    <div th:each="like : ${likes}" class="match-card">
+        <div class="profile-info">
+            <h2 th:text="${like.getName()}"></h2>
+        </div>
+    </div>
+</div>
+</body>
+</html>
