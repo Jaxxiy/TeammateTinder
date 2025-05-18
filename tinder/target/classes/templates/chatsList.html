@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat List</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+
+    .chat-list-container {
+      width: 80%;
+      margin: 0 auto;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 20px;
+    }
+
+    .chat-item {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .chat-item:last-child {
+      border-bottom: none;
+    }
+
+    .chat-link {
+      text-decoration: none;
+      color: black;
+    }
+
+    .last-message {
+      font-size: small;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+<div class="chat-list-container">
+  <h2>Chat List</h2>
+
+  <div th:each="chat : ${chats}" class="chat-item">
+    <div>
+      <a th:href="@{/chat/{chatId}(chatId=${chat.id})}" class="chat-link">
+        Chat with User <span th:text="${chat.getUser_id()}"></span>
+      </a>
+      <p class="last-message">laslals</p>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
