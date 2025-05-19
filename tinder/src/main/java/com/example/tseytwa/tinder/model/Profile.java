@@ -13,6 +13,9 @@ public class Profile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
     private String name;
     private Integer age;
     @ManyToMany
@@ -113,6 +116,14 @@ public class Profile {
 
     public void setSkills(List<Skills> skills) {
         this.skills = skills;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

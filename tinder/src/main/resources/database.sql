@@ -10,7 +10,8 @@ CREATE TABLE users (
 CREATE TABLE profiles (
                           id SERIAL PRIMARY KEY,
                           name VARCHAR(255),
-                          age INTEGER
+                          age INTEGER,
+                          user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- work_experience table

@@ -18,24 +18,14 @@ public class ChatService {
 
     private final ChatRepository chatRepository;
     private final ChatMessageRepository chatMessageRepository;
-    private final ProfileRepository profileRepository;
 
     @Autowired
     public ChatService(ChatRepository chatRepository,
-                       ChatMessageRepository chatMessageRepository,
-                       ProfileRepository profileRepository) {
+                       ChatMessageRepository chatMessageRepository) {
         this.chatRepository = chatRepository;
         this.chatMessageRepository = chatMessageRepository;
-        this.profileRepository = profileRepository;
     }
 
-    //public List<Chat> findAllByUserId(Integer userId) {
-      //  return chatRepository.findAllByUserId(userId);
-    //}
-
-    public List<Chat> findAll() {
-        return chatRepository.findAll();
-    }
 
     public List<ChatMessage> getChatMessagesBetweenUsers(int currentUserId, int otherUserId) {
 
@@ -46,5 +36,14 @@ public class ChatService {
         System.out.println("chatid "+chat.getId());
 
         return chatMessageRepository.findAllByChatIdOrderByTimestampAsc(chat.getId());
+    }
+
+    public List<Chat> getChatsByProfileId(Integer id) {
+        System.out.println(id);
+        return chatRepository.findChatsByProfileId(id);
+    }
+
+    public Chat findChatById(int id) {
+        return chatRepository.findById(id).get();
     }
 }

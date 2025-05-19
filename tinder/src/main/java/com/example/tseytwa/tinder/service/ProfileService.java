@@ -3,6 +3,7 @@ package com.example.tseytwa.tinder.service;
 import com.example.tseytwa.tinder.model.Match;
 import com.example.tseytwa.tinder.model.Profile;
 import com.example.tseytwa.tinder.model.Skills;
+import com.example.tseytwa.tinder.model.User;
 import com.example.tseytwa.tinder.repository.MatchersRepository;
 import com.example.tseytwa.tinder.repository.ProfileRepository;
 import com.example.tseytwa.tinder.repository.SkillsRepository;
@@ -44,5 +45,9 @@ public class ProfileService {
     public List<Skills> findAllSkillsByProfileId(int id) {
         return skillsRepository.findAllByProfileId(id);
 
+    }
+
+    public Profile findByUser(User user) {
+        return profileRepository.findByUser(user);
     }
 }
