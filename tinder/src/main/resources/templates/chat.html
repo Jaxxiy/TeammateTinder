@@ -164,8 +164,8 @@
   </div>
 </div>
 
-<form th:action="@{'/chat/' + ${chat.id} + '/send'}" method="post" class="input-area">
-  <input type="text" name="content" class="message-input" placeholder="Напишите сообщение..." required>
+<form th:action="@{'/chat/' + ${chat.id}}" method="post" class="input-area">
+  <input type="text" name="message" class="message-input" placeholder="Напишите сообщение..." required>
   <button type="submit" class="send-btn">→</button>
 </form>
 

@@ -3,6 +3,7 @@ package com.example.tseytwa.tinder.controller;
 import com.example.tseytwa.tinder.dto.RegistrationRequest;
 import com.example.tseytwa.tinder.model.User;
 import com.example.tseytwa.tinder.service.SecurityService;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +32,6 @@ public class AuthController {
     public String register(@ModelAttribute RegistrationRequest registrationRequest, Model model) {
         try {
             User newUser = securityService.createUser(registrationRequest);
-            // Можно добавить сообщение об успешной регистрации
             return "redirect:/auth/login";
         } catch (Exception e) {
             System.out.println(e.getMessage());

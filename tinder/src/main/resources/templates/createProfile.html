@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Создание профиля</title>
+</head>
+<body>
+<h1>Создание профиля</h1>
+
+<div th:if="${successMessage}" class="alert alert-success">
+  <span th:text="${successMessage}"></span>
+</div>
+
+<div th:if="${errorMessage}" class="alert alert-danger">
+  <span th:text="${errorMessage}"></span>
+</div>
+
+<form th:action="@{/profile/create}" th:object="${profileDto}" method="post">
+  <div>
+    <label for="name">Имя:</label>
+    <input type="text" id="name" th:field="*{name}" required>
+    <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+  </div>
+
+  <div>
+    <label for="age">Возраст:</label>
+    <input type="number" id="age" th:field="*{age}" required>
+    <span th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></span>
+  </div>
+
+  <button type="submit">Создать профиль</button>
+</form>
+</body>
+</html>

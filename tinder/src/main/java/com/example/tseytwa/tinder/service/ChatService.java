@@ -46,4 +46,8 @@ public class ChatService {
     public Chat findChatById(int id) {
         return chatRepository.findById(id).get();
     }
+
+    public void postMessage(ChatMessage message) {
+        chatMessageRepository.save(message);
+    }
 }

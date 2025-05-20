@@ -8,15 +8,14 @@ import com.example.tseytwa.tinder.repository.UserRepository;
 import com.example.tseytwa.tinder.service.ChatService;
 import com.example.tseytwa.tinder.service.ProfileService;
 import com.example.tseytwa.tinder.service.UserService;
+import org.apache.logging.log4j.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
@@ -40,7 +39,7 @@ public class ChatController {
 
         User user = userService.findByUsername(auth.getName()).get();
 
-        Profile profile = profileService.findByUser(user);
+        Profile profile = profileService.findByUser(user).get();
 
         List<Chat> chats = chatService.getChatsByProfileId(profile.getId());
 
@@ -53,16 +52,36 @@ public class ChatController {
     }
 
     @GetMapping("/{id}")
-    public String chat(Model model, Authentication auth, @PathVariable int id) {
+    public String chat(Model model,
+                       Authentication auth,
+                       @PathVariable int id) {
         Chat chat = chatService.findChatById(id);
         List<ChatMessage> messages = chatService.getChatMessagesBetweenUsers(chat.getUserId().getId(), chat.getUserWith().getId());
 
         User user = userService.findByUsername(auth.getName()).get();
-        Profile myProfile = profileService.findByUser(user);
+        Profile myProfile = profileService.findByUser(user).get();
 
         model.addAttribute("chat", chat);
         model.addAttribute("myProfile", myProfile);
         model.addAttribute("messages", messages);
         return "chat";
+    }
+
+    @PostMapping("/{id}")
+    public String postMessage(Model model,
+                              @PathVariable int id,
+                              @RequestParam String message,
+                              Authentication auth) {
+        Chat chat = chatService.findChatById(id);
+        User user = userService.findByUsername(auth.getName()).get();
+        Profile myProfile = profileService.findByUser(user).get();
+        ChatMessage chatMessage = new ChatMessage();
+        chatMessage.setAuthor(myProfile);
+        chatMessage.setChat(chat);
+        chatMessage.setMessage(message);
+        chatMessage.setTimestamp(LocalDateTime.now());
+        chatService.postMessage(chatMessage);
+        return "redirect:/chat/" + id;
+
     }
 }
