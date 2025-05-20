@@ -2,6 +2,8 @@ package com.example.tseytwa.tinder.model;
 
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -18,6 +20,7 @@ public class ChatMessage {
     @ManyToOne
     @JoinColumn(name = "author_id")
     private Profile author;
+    @NotBlank(message = "message cannot be null")
     private String message;
     private LocalDateTime timestamp;
 

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Просмотр профиля</title>
+    <style>
+        .profile-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .profile-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .profile-details {
+            margin-bottom: 15px;
+        }
+        .skills-list, .links-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .skills-list li, .links-list li {
+            background-color: #f0f0f0;
+            margin: 5px 0;
+            padding: 8px;
+            border-radius: 4px;
+        }
+        .links-list li a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .links-list li a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="profile-container">
+    <h1 class="profile-header">Профиль пользователя</h1>
+
+    <div class="profile-details">
+        <p><strong>Имя:</strong> <span th:text="${profile.name}"></span></p>
+        <p><strong>Возраст:</strong> <span th:text="${profile.age}"></span></p>
+    </div>
+
+    <div class="profile-details">
+        <h3>Навыки:</h3>
+        <ul class="skills-list">
+            <li th:each="skill : ${profile.skills}" th:text="${skill.name}"></li>
+        </ul>
+    </div>
+
+    <div class="profile-details">
+        <h3>Ссылки:</h3>
+        <ul class="links-list">
+            <li th:each="link : ${profile.links}">
+                <a th:href="${link.link}" th:text="${link.social}" target="_blank"></a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="profile-details">
+        <h3>Опыт работы:</h3>
+        <ul class="work-experience-list">
+            <li th:each="workExperience : ${profile.workExperience}" class="work-experience-item">
+                <p><strong>Компания:</strong> <span th:text="${workExperience.company}"></span></p>
+                <p><strong>Должность:</strong> <span th:text="${workExperience.post}"></span></p>
+                <p><strong>Описание:</strong> <span th:text="${workExperience.description}"></span></p>
+                <p><strong>Год начала:</strong> <span th:text="${workExperience.startedAt}"></span></p>
+                <p><strong>Год окончания:</strong> <span th:text="${workExperience.endedAt}"></span></p>
+            </li>
+        </ul>
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,9 +1,12 @@
 package com.example.tseytwa.tinder.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.List;
 import java.util.Set;
@@ -16,7 +19,9 @@ public class Profile {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+    @NotBlank(message = "name cannot be null")
     private String name;
+    @Positive
     private Integer age;
     @ManyToMany
     @JoinTable(
@@ -43,8 +48,43 @@ public class Profile {
     @OneToMany(mappedBy = "profile2")
     private List<Match> matchesAsProfile2;
 
-    @OneToMany(mappedBy = "profile")
+    @ManyToMany
+    @JoinTable(
+            name = "profile_skills",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
+    )
     private List<Skills> skills;
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    private List<Links> links;
+
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    private List<WorkExperience> workExperience;
+
+    public List<WorkExperience> getWorkExperience() {
+        return workExperience;
+    }
+
+    public void setWorkExperience(List<WorkExperience> workExperience) {
+        this.workExperience = workExperience;
+    }
+
+    public List<Links> getLinks() {
+        return links;
+    }
+
+    public void setLinks(List<Links> links) {
+        this.links = links;
+    }
+
+    public List<Skills> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(List<Skills> skills) {
+        this.skills = skills;
+    }
 
     public Integer getId() {
         return id;
@@ -108,14 +148,6 @@ public class Profile {
 
     public void setMatchesAsProfile2(List<Match> matchesAsProfile2) {
         this.matchesAsProfile2 = matchesAsProfile2;
-    }
-
-    public List<Skills> getSkills() {
-        return skills;
-    }
-
-    public void setSkills(List<Skills> skills) {
-        this.skills = skills;
     }
 
     public User getUser() {

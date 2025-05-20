@@ -1,14 +1,14 @@
 package com.example.tseytwa.tinder.service;
 
+import com.example.tseytwa.tinder.dto.LinkDto;
 import com.example.tseytwa.tinder.dto.ProfileDto;
-import com.example.tseytwa.tinder.model.Match;
-import com.example.tseytwa.tinder.model.Profile;
-import com.example.tseytwa.tinder.model.Skills;
-import com.example.tseytwa.tinder.model.User;
+import com.example.tseytwa.tinder.dto.WorkExperienceDto;
+import com.example.tseytwa.tinder.model.*;
 import com.example.tseytwa.tinder.repository.MatchersRepository;
 import com.example.tseytwa.tinder.repository.ProfileRepository;
 import com.example.tseytwa.tinder.repository.SkillsRepository;
 import com.example.tseytwa.tinder.repository.UserRepository;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -49,11 +49,11 @@ public class ProfileService {
     }
 
     public List<Skills> findAllSkillsByProfileId(int id) {
-        return skillsRepository.findAllByProfileId(id);
+        return profileRepository.findById(id).get().getSkills();
     }
 
     @Transactional
-    public Profile createProfileForUser(String username, ProfileDto profileDto) {
+    public void createProfileForUser(String username, ProfileDto profileDto) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -62,14 +62,83 @@ public class ProfileService {
         }
 
         Profile profile = new Profile();
-        profile.setUser(user);
         profile.setName(profileDto.getName());
         profile.setAge(profileDto.getAge());
+        profile.setSkills(profileDto.getSelectedSkillIds());
+        List<Links> newLinks = new ArrayList<>();
 
-        return profileRepository.save(profile);
+        for (LinkDto links: profileDto.getLinks()){
+            Links link = new Links();
+            link.setSocial(links.getName());
+            link.setLink(links.getUrl());
+            link.setProfile(profile);
+            newLinks.add(link);
+        }
+        profile.setLinks(newLinks);
+
+
+        List<WorkExperience> newWorkExperiences = new ArrayList<>();
+        for (WorkExperienceDto experienceDto: profileDto.getWorkExperiences()){
+            WorkExperience experience = new WorkExperience();
+            experience.setProfile(profile);
+            experience.setCompany(experienceDto.getCompany());
+            experience.setPost(experienceDto.getPost());
+            experience.setStartedAt(experienceDto.getStartedAt());
+            experience.setEndedAt(experienceDto.getEndedAt());
+            experience.setDescription(experienceDto.getDescription());
+            newWorkExperiences.add(experience);
+        }
+
+        profile.setWorkExperience(newWorkExperiences);
+
+        profileRepository.save(profile);
     }
 
     public Optional<Profile> findByUser(User user) {
+        System.out.println(user);
         return profileRepository.findByUser(user);
+    }
+
+    public List<Skills> getAllSkills() {
+        return skillsRepository.findAll();
+    }
+
+    public void editProfileForUser(String username, @Valid ProfileDto profileDto) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        Profile profile = profileRepository.findByUser(user).get();
+        profile.setUser(user);
+        profile.setName(profileDto.getName());
+        profile.setAge(profileDto.getAge());
+        profile.setSkills(profileDto.getSelectedSkillIds());
+        List<Links> newLinks = new ArrayList<>();
+
+        for (LinkDto links: profileDto.getLinks()){
+            Links link = new Links();
+            link.setSocial(links.getName());
+            link.setLink(links.getUrl());
+            link.setProfile(profile);
+            newLinks.add(link);
+        }
+        profile.setLinks(newLinks);
+
+
+        List<WorkExperience> newWorkExperiences = new ArrayList<>();
+        for (WorkExperienceDto experienceDto: profileDto.getWorkExperiences()){
+            WorkExperience experience = new WorkExperience();
+            experience.setProfile(profile);
+            experience.setCompany(experienceDto.getCompany());
+            experience.setPost(experienceDto.getPost());
+            experience.setStartedAt(experienceDto.getStartedAt());
+            experience.setEndedAt(experienceDto.getEndedAt());
+            experience.setDescription(experienceDto.getDescription());
+            newWorkExperiences.add(experience);
+        }
+
+        profile.setWorkExperience(newWorkExperiences);
+
+        profileRepository.save(profile);
+
     }
 }

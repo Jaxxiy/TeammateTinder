@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Изменение профиля</title>
+    <style>
+        .skill-checkbox {
+            margin: 5px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .error { color: red; }
+        .link-input, .work-experience-input {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h1>Изменение профиля</h1>
+
+<div th:if="${successMessage != null and !successMessage.isEmpty()}"
+     class="alert alert-success" th:text="${successMessage}">
+</div>
+
+<div th:if="${errorMessage != null and !errorMessage.isEmpty()}"
+     class="alert alert-danger" th:text="${errorMessage}">
+</div>
+
+<form th:action="@{/profile/edit}" th:object="${profileDto}" method="post">
+
+    <div>
+        <label>Имя:</label>
+        <input type="text" th:field="*{name}" required>
+        <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error"></span>
+    </div>
+
+    <div>
+        <label>Возраст:</label>
+        <input type="number" th:field="*{age}" required min="1">
+        <span th:if="${#fields.hasErrors('age')}" th:errors="*{age}" class="error"></span>
+    </div>
+
+    <div>
+        <h3>Выберите свои навыки:</h3>
+        <input type="text" id="searchSkill" placeholder="Поиск навыков...">
+        <ul id="skillsList">
+            <li th:each="skill : ${allSkills}">
+                <label>
+                    <input type="checkbox" th:value="${skill.id}" th:field="*{selectedSkillIds}" th:checked="${profileDto.selectedSkillIds.contains(skill)}">
+                    <span th:text="${skill.name}"></span>
+                </label>
+            </li>
+        </ul>
+    </div>
+
+    <div>
+        <h3>Добавьте ссылки:</h3>
+        <div id="linksContainer">
+            <div th:each="link, iterStat : ${profileDto.links}" class="link-input">
+                <input type="text" th:field="*{links[__${iterStat.index}__].social}" placeholder="Название ссылки" required>
+                <input type="url" th:field="*{links[__${iterStat.index}__].link}" placeholder="URL ссылки" required>
+            </div>
+        </div>
+        <button type="button" id="addLinkButton">Добавить еще одну ссылку</button>
+    </div>
+
+    <div>
+        <h3>Добавьте опыт работы:</h3>
+        <div id="workExperienceContainer">
+            <div th:each="workExperience, iterStat : ${profileDto.workExperiences}" class="work-experience-input">
+                <input type="text" th:field="*{workExperiences[__${iterStat.index}__].company}" placeholder="Компания" required>
+                <input type="text" th:field="*{workExperiences[__${iterStat.index}__].post}" placeholder="Должность" required>
+                <input type="text" th:field="*{workExperiences[__${iterStat.index}__].description}" placeholder="Описание" required>
+                <input type="number" th:field="*{workExperiences[__${iterStat.index}__].startedAt}" placeholder="Год начала" required min="1900" max="2025">
+                <input type="number" th:field="*{workExperiences[__${iterStat.index}__].endedAt}" placeholder="Год окончания" required min="1900" max="2025">
+            </div>
+        </div>
+        <button type="button" id="addWorkExperienceButton">Добавить еще один опыт работы</button>
+    </div>
+
+    <button type="submit">Сохранить изменения</button>
+</form>
+
+<script>
+    $(document).ready(function() {
+        $("#searchSkill").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#skillsList li").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+        $("#addLinkButton").click(function() {
+            var index = $("#linksContainer .link-input").length;
+            var newLinkInput = `
+        <div class="link-input">
+          <input type="text" name="links[${index}].social" placeholder="Название ссылки" required>
+          <input type="url" name="links[${index}].link" placeholder="URL ссылки" required>
+        </div>
+      `;
+            $("#linksContainer").append(newLinkInput);
+        });
+
+        $("#addWorkExperienceButton").click(function() {
+            var index = $("#workExperienceContainer .work-experience-input").length;
+            var newWorkExperienceInput = `
+        <div class="work-experience-input">
+          <input type="text" name="workExperiences[${index}].company" placeholder="Компания" required>
+          <input type="text" name="workExperiences[${index}].post" placeholder="Должность" required>
+          <input type="text" name="workExperiences[${index}].description" placeholder="Описание" required>
+          <input type="number" name="workExperiences[${index}].startedAt" placeholder="Год начала" required min="1900" max="2025">
+          <input type="number" name="workExperiences[${index}].endedAt" placeholder="Год окончания" required min="1900" max="2025">
+        </div>
+      `;
+            $("#workExperienceContainer").append(newWorkExperienceInput);
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,12 +1,11 @@
 package com.example.tseytwa.tinder.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+
 
 import java.util.List;
 
 @Entity(name = "chat")
-@Data
 public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

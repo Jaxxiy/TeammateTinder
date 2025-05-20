@@ -1,7 +1,10 @@
 package com.example.tseytwa.tinder.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
+import java.util.Set;
 
 @Entity
 public class Skills {
@@ -9,11 +12,11 @@ public class Skills {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private Profile profile;
-
+    @NotBlank(message = "User cannot be null")
     private String name;
+
+    @ManyToMany(mappedBy = "skills")
+    private Set<Profile> profiles;
 
     public int getId() {
         return id;
@@ -23,19 +26,19 @@ public class Skills {
         this.id = id;
     }
 
-    public Profile getProfile() {
-        return profile;
-    }
-
-    public void setProfile(Profile profile) {
-        this.profile = profile;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Set<Profile> getProfiles() {
+        return profiles;
+    }
+
+    public void setProfiles(Set<Profile> profiles) {
+        this.profiles = profiles;
     }
 }
