@@ -1,22 +1,22 @@
 package com.example.tseytwa.tinder.dto;
 
 public class LinkDto {
-    private String name;
-    private String url;
+    private String social;
+    private String link;
 
-    public String getName() {
-        return name;
+    public String getSocial() {
+        return social;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSocial(String social) {
+        this.social = social;
     }
 
-    public String getUrl() {
-        return url;
+    public String getLink() {
+        return link;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setLink(String link) {
+        this.link = link;
     }
 }

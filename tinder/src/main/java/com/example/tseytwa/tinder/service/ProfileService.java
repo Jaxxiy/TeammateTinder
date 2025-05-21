@@ -65,13 +65,17 @@ public class ProfileService {
         Profile profile = new Profile();
         profile.setName(profileDto.getName());
         profile.setAge(profileDto.getAge());
-        profile.setSkills(profileDto.getSelectedSkills());
+        
+        // Get skills by IDs
+        List<Skills> selectedSkills = skillsRepository.findAllByIdIn(profileDto.getSelectedSkillIds());
+        profile.setSkills(selectedSkills);
+        
         List<Links> newLinks = new ArrayList<>();
 
         for (LinkDto links: profileDto.getLinks()){
             Links link = new Links();
-            link.setSocial(links.getName());
-            link.setLink(links.getUrl());
+            link.setSocial(links.getSocial());
+            link.setLink(links.getLink());
             link.setProfile(profile);
             newLinks.add(link);
         }
@@ -129,15 +133,12 @@ public class ProfileService {
     @Transactional
     public void updateSkills(Profile profile, ProfileDto profileDto) {
         List<Skills> currentSkills = profile.getSkills();
-
         currentSkills.clear();
 
-        profileDto.getSelectedSkills().forEach( skillDto -> {
-            Skills skills = new Skills();
-            skills.setName(skillDto.getName());
-            currentSkills.add(skills);
-        });
-
+        // Get all selected skills from the database
+        List<Skills> selectedSkills = skillsRepository.findAllByIdIn(profileDto.getSelectedSkillIds());
+        
+        currentSkills.addAll(selectedSkills);
     }
 
     @Transactional
@@ -151,8 +152,8 @@ public class ProfileService {
         // Добавляем новые ссылки
         profileDto.getLinks().forEach(linkDto -> {
             Links link = new Links();
-            link.setSocial(linkDto.getName());
-            link.setLink(linkDto.getUrl());
+            link.setSocial(linkDto.getSocial());
+            link.setLink(linkDto.getLink());
             link.setProfile(profile);
             currentLinks.add(link); // Добавляем в управляемую коллекцию
         });

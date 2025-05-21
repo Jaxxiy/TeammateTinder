@@ -52,7 +52,7 @@
         <ul id="skillsList">
             <li th:each="skill : ${allSkills}">
                 <label>
-                    <input type="checkbox" th:value="${skill.id}" th:field="*{selectedSkills}" th:checked="${profileDto.selectedSkills.contains(skill)}">
+                    <input type="checkbox" th:value="${skill.id}" th:field="*{selectedSkillIds}" th:checked="${profileDto.selectedSkillIds.contains(skill.id)}">
                     <span th:text="${skill.name}"></span>
                 </label>
             </li>
