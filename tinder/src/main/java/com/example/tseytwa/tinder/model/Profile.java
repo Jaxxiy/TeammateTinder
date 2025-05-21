@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.misc.NotNull;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -29,7 +31,7 @@ public class Profile {
             joinColumns = @JoinColumn(name = "liker_id"),
             inverseJoinColumns = @JoinColumn(name = "likeable_id")
     )
-    Set<Profile> features;
+    private Set<Profile> features;
 
     @ManyToMany
     @JoinTable(
@@ -56,11 +58,22 @@ public class Profile {
     )
     private List<Skills> skills;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Links> links;
 
-    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WorkExperience> workExperience;
+
+    public Profile() {
+        features = new HashSet<>();
+        likedProfiles = new HashSet<>();
+        likedByProfiles = new HashSet<>();
+        matchesAsProfile1 = new ArrayList<>();
+        matchesAsProfile2 = new ArrayList<>();
+        links = new ArrayList<>();
+        skills = new ArrayList<>();
+        workExperience = new ArrayList<>();
+    }
 
     public List<WorkExperience> getWorkExperience() {
         return workExperience;

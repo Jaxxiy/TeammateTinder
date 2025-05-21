@@ -1,6 +1,5 @@
 package com.example.tseytwa.tinder.dto;
 
-import com.example.tseytwa.tinder.model.Links;
 import com.example.tseytwa.tinder.model.Skills;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
@@ -13,12 +12,12 @@ public class ProfileDto {
     private String name;
     @Positive
     private Integer age;
-    private List<Skills> selectedSkillIds; // Список ID выбранных навыков
+    private List<Skills> selectedSkills;
     private List<LinkDto> links;
     private List<WorkExperienceDto> workExperiences;
 
     public ProfileDto() {
-        selectedSkillIds = new ArrayList<>();
+        selectedSkills = new ArrayList<>();
         links = new ArrayList<>();
         workExperiences = new ArrayList<>();
     }
@@ -39,12 +38,12 @@ public class ProfileDto {
         this.links = links;
     }
 
-    public List<Skills> getSelectedSkillIds() {
-        return selectedSkillIds;
+    public List<Skills> getSelectedSkills() {
+        return selectedSkills;
     }
 
-    public void setSelectedSkillIds(List<Skills> selectedSkillIds) {
-        this.selectedSkillIds = selectedSkillIds;
+    public void setSelectedSkills(List<Skills> selectedSkills) {
+        this.selectedSkills = selectedSkills;
     }
 
     public String getName() {

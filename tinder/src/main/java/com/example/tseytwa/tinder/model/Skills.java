@@ -15,8 +15,6 @@ public class Skills {
     @NotBlank(message = "User cannot be null")
     private String name;
 
-    @ManyToMany(mappedBy = "skills")
-    private Set<Profile> profiles;
 
     public int getId() {
         return id;
@@ -32,13 +30,5 @@ public class Skills {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public Set<Profile> getProfiles() {
-        return profiles;
-    }
-
-    public void setProfiles(Set<Profile> profiles) {
-        this.profiles = profiles;
     }
 }

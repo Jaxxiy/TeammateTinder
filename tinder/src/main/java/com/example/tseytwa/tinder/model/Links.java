@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.util.Objects;
+
 @Entity(name = "links")
 public class Links {
     @Id
@@ -52,4 +54,5 @@ public class Links {
     public void setLink(@NotBlank(message = "link cannot be null") String link) {
         this.link = link;
     }
+
 }
