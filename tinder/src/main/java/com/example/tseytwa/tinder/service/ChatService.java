@@ -2,18 +2,17 @@ package com.example.tseytwa.tinder.service;
 
 import com.example.tseytwa.tinder.model.Chat;
 import com.example.tseytwa.tinder.model.ChatMessage;
-import com.example.tseytwa.tinder.model.Profile;
 import com.example.tseytwa.tinder.repository.ChatMessageRepository;
 import com.example.tseytwa.tinder.repository.ChatRepository;
-import com.example.tseytwa.tinder.repository.ProfileRepository;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
+@Transactional
 public class ChatService {
 
     private final ChatRepository chatRepository;
@@ -24,6 +23,10 @@ public class ChatService {
                        ChatMessageRepository chatMessageRepository) {
         this.chatRepository = chatRepository;
         this.chatMessageRepository = chatMessageRepository;
+    }
+
+    public Chat findChatBetweenUsers(int user1Id, int user2Id) {
+        return chatRepository.findChatBetweenUsers(user1Id,user2Id).orElse(null);
     }
 
 

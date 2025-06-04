@@ -3,7 +3,6 @@ package com.example.tseytwa.tinder.controller;
 import com.example.tseytwa.tinder.dto.RegistrationRequest;
 import com.example.tseytwa.tinder.model.User;
 import com.example.tseytwa.tinder.service.SecurityService;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;

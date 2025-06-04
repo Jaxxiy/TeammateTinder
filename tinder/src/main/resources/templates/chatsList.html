@@ -6,34 +6,90 @@
   <title>Мои чаты | Tinder</title>
   <style>
     :root {
-      --primary-color: #ff4d4d;
-      --secondary-color: #ff9999;
-      --text-color: #333;
-      --light-text: #777;
-      --bg-color: #fff;
-      --hover-bg: #f5f5f5;
-      --border-color: #e0e0e0;
+      --primary-color: #6c5ce7;
+      --secondary-color: #a29bfe;
+      --accent-color: #fd79a8;
+      --dark-color: #2d3436;
+      --light-color: #ffffff;
+      --success-color: #00b894;
+      --danger-color: #d63031;
+      --text-color: #2d3436;
+      --text-light: #636e72;
+      --border-color: #ddd;
     }
 
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      font-family: 'Poppins', sans-serif;
     }
 
     body {
-      background-color: var(--bg-color);
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--light-color);
       color: var(--text-color);
       line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
+    /* Навигационная панель */
+    .navbar {
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      justify-content: center;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-light);
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary-color);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      background: var(--primary-color);
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 70%;
+    }
+
+    /* Основное содержимое */
     .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 20px;
+      max-width: 1200px;
+      margin: 0 40.0%;
+      padding: 1rem;
     }
 
+    /* Заголовок */
     .header {
       display: flex;
       justify-content: space-between;
@@ -64,8 +120,10 @@
       background-color: var(--secondary-color);
     }
 
+    /* Список чатов */
     .chat-list {
       list-style: none;
+      width: 100%;
     }
 
     .chat-item {
@@ -75,11 +133,12 @@
       text-decoration: none;
       color: inherit;
       transition: background-color 0.2s;
-      position: relative;
+      position: static;
+      border-radius: 30px;
     }
 
     .chat-item:hover {
-      background-color: var(--hover-bg);
+      background-color: rgb(240,240,240);
     }
 
     .chat-header {
@@ -95,35 +154,24 @@
 
     .chat-time {
       font-size: 14px;
-      color: var(--light-text);
+      color: var(--text-light);
     }
 
-    .last-message {
-      display: flex;
-      font-size: 15px;
-      color: var(--light-text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    .chat-message {
+      font-size: 14px;
+      color: var(--text-light);
+      display: block;
+      margin-top: 5px;
     }
 
-    .last-message.unread {
-      font-weight: 600;
-      color: var(--text-color);
-    }
-
-    .you-indicator {
-      color: var(--primary-color);
-      margin-right: 5px;
-    }
-
+    /* Сообщение об отсутствии чатов */
     .empty-state {
       text-align: center;
       padding: 40px 20px;
     }
 
     .empty-state p {
-      color: var(--light-text);
+      color: var(--text-light);
       margin-bottom: 20px;
     }
 
@@ -137,47 +185,70 @@
       font-weight: 500;
     }
 
-    @media (max-width: 600px) {
-      .container {
-        padding: 15px;
-      }
-
-      .header h1 {
-        font-size: 20px;
-      }
-
-      .chat-name {
-        font-size: 16px;
-      }
-
-      .last-message {
-        font-size: 14px;
-      }
+    .search-btn:hover {
+      background-color: var(--accent-color);
     }
+
+    /* Кнопка выхода */
+    .logout-button {
+        position: absolute;
+        right: 2rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: var(--danger-color);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .logout-button:hover {
+        background-color: #ff5252;
+    }
+
   </style>
 </head>
 <body>
+<nav class="navbar">
+  <ul class="nav-links">
+    <li><a th:href="@{/main}">Главная</a></li>
+    <li><a th:href="@{/chat}">Чат</a></li>
+    <li><a th:href="@{/matchers/{profileId}(profileId=${profile.getId()})}">Мэтчи</a></li>
+    <li><a th:href="@{/likes/{profileId}(profileId=${profile.getId()})}">Лайки</a></li>
+    <li><a th:href="@{/features/{profileId}(profileId=${profile.getId()})}">Избранное</a></li>
+    <li><a th:href="@{/profile/{profileId}(profileId=${profile.getId()})}">Профиль</a></li>
+  </ul>
+  <form th:action="@{/auth/logout}" method="post" style="display: inline;">
+    <button type="submit" class="logout-button">Выйти</button>
+  </form>
+</nav>
 <div class="container">
-  <div class="header">
-    <h1>Мои чаты</h1>
-    <a th:href="@{'/profile/'+${profile.id}}" class="profile-btn">Мой профиль</a>
-  </div>
 
   <ul class="chat-list">
     <!-- Для каждого чата -->
     <li th:each="chat : ${chats}">
       <a th:href="@{'/chat/' + ${chat.id}}" class="chat-item">
         <div class="chat-header">
-                        <span class="chat-name" th:text="${chat.userId == profile.id ? chat.getUserWith().getName() : chat.getUserId().getName()}">
-                            Имя собеседника
-                        </span>
-          <span class="chat-time" th:text="${#temporals.format(chat.getMessages().getLast().getTimestamp(), 'dd.MM.yy HH:mm')}">
-                            01.01.23 12:00
-                        </span>
-          <span th:text="${chat.getMessages().getLast().getMessage()}">Последнее сообщение в чате...</span>
-
+          <span class="chat-name" th:text="${chat.getUserWith().getName()}">Имя собеседника</span>
+          <span class="chat-time" th:if="${not #lists.isEmpty(chat.messages)}" 
+                th:text="${#temporals.format(chat.messages[__${#lists.size(chat.messages)-1}__].timestamp, 'dd.MM.yy HH:mm')}">
+              01.01.23 12:00
+          </span>
+          <span class="chat-time" th:unless="${not #lists.isEmpty(chat.messages)}">
+              Нет сообщений
+          </span>
         </div>
-
+        <span class="chat-message" th:if="${not #lists.isEmpty(chat.messages)}" 
+              th:text="${chat.messages[__${#lists.size(chat.messages)-1}__].message}">
+            Последнее сообщение в чате...
+        </span>
+        <span class="chat-message" th:unless="${not #lists.isEmpty(chat.messages)}">
+            Начните общение
+        </span>
       </a>
     </li>
 

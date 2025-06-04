@@ -4,14 +4,313 @@
   <meta charset="UTF-8">
   <title>Создание профиля</title>
   <style>
+    :root {
+      --primary-color: #6c5ce7;
+      --secondary-color: #a29bfe;
+      --accent-color: #fd79a8;
+      --dark-color: #2d3436;
+      --light-color: #f5f6fa;
+      --success-color: #00b894;
+      --danger-color: #d63031;
+      --text-color: #2d3436;
+      --text-light: #636e72;
+      --border-color: #ddd;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--light-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Навигационная панель */
+    .navbar {
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      justify-content: center;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-light);
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary-color);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      background: var(--primary-color);
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 70%;
+    }
+
+    /* Основное содержимое */
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      padding: 2rem;
+    }
+
+    h1 {
+      margin-bottom: 2rem;
+      color: var(--dark-color);
+      text-align: center;
+    }
+
+    /* Форма создания профиля */
+    form {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    form div {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="url"] {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .error {
+      color: var(--danger-color);
+      font-size: 0.9rem;
+    }
+
+    /* Навыки */
     .skill-checkbox {
       margin: 5px;
       padding: 8px;
-      border: 1px solid #ddd;
+      border: 1px solid var(--border-color);
       border-radius: 4px;
       display: inline-block;
     }
-    .error { color: red; }
+
+    /* Ссылки и опыт работы */
+    .link-input, .work-experience-input {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      position: relative;
+    }
+
+    /* Кнопки добавления */
+    #addLinkButton, #addWorkExperienceButton {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 15px;
+      cursor: pointer;
+      margin-bottom: 1rem;
+      transition: background-color 0.3s ease;
+    }
+
+    #addLinkButton:hover, #addWorkExperienceButton:hover {
+      background-color: var(--accent-color);
+    }
+
+    /* Кнопка отправки формы */
+    button[type="submit"] {
+      background-color: var(--success-color);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 10px 15px;
+      cursor: pointer;
+      font-size: 1rem;
+      width: 100%;
+      transition: background-color 0.3s ease;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #009688;
+    }
+
+    /* Адаптивность */
+    @media (max-width: 768px) {
+      form {
+        padding: 1rem;
+      }
+    }
+
+    /* Добавляем стили для скроллируемого списка навыков */
+    .skills-container {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 10px;
+        margin-bottom: 15px;
+    }
+
+    .skills-container::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .skills-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .skills-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+    }
+
+    .skills-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+    }
+
+    /* Стили для чекбоксов в списке */
+    .skills-container label {
+        display: block;
+        padding: 5px 0;
+        cursor: pointer;
+    }
+
+    .skills-container input[type="checkbox"] {
+        margin-right: 8px;
+    }
+
+    .upload-area {
+      border: 2px dashed var(--border-color);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: border-color 0.3s ease;
+    }
+
+    .upload-area:hover {
+      border-color: var(--primary-color);
+    }
+
+    .upload-placeholder {
+      color: var(--text-light);
+    }
+
+    .upload-icon {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    .upload-hint {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      margin-top: 0.5rem;
+    }
+
+    .preview-area {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .preview-item {
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .preview-image {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .remove-preview {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background-color: var(--danger-color);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+    }
+
+    .remove-preview:hover {
+      background-color: #ff5252;
+    }
+
+    /* Стили для поиска навыков */
+    #searchSkill, #searchDesiredSkill {
+      width: 100%;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
   </style>
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
@@ -27,7 +326,23 @@
      class="alert alert-danger" th:text="${errorMessage}">
 </div>
 
-<form th:action="@{/profile/create}" th:object="${profileDto}" method="post">
+<form th:action="@{/profile/create}" th:object="${profileDto}" method="post" enctype="multipart/form-data">
+
+  <!-- Секция загрузки фотографий -->
+  <div class="profile-details">
+    <h3>Фотографии:</h3>
+    <div class="photo-upload-section">
+      <div class="upload-area" id="uploadArea">
+        <input type="file" id="photoInput" name="photos" multiple accept="image/*" style="display: none;">
+        <div class="upload-placeholder" onclick="document.getElementById('photoInput').click()">
+          <i class="upload-icon">📷</i>
+          <p>Нажмите для загрузки фотографий</p>
+          <p class="upload-hint">или перетащите файлы сюда</p>
+        </div>
+      </div>
+      <div id="previewArea" class="preview-area"></div>
+    </div>
+  </div>
 
   <div>
     <label>Имя:</label>
@@ -42,16 +357,35 @@
   </div>
 
   <div>
-    <h3>Выберите свои навыки:</h3>
-    <input type="text" id="searchSkill" placeholder="Поиск навыков...">
-    <ul id="skillsList">
-      <li th:each="skill : ${allSkills}">
+    <label>О себе:</label>
+    <textarea th:field="*{description}" rows="4"></textarea>
+    <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="error"></span>
+  </div>
+
+  <div class="form-group">
+    <label>Навыки:</label>
+    <input type="text" id="searchSkill" placeholder="Поиск навыков..." class="form-control">
+    <div class="skills-container">
+      <div th:each="skill : ${allSkills}">
         <label>
-          <input type="checkbox" th:value="${skill.id}" th:field="*{selectedSkillIds}">
-          <span th:text="${skill.name}"></span>
+          <input type="checkbox" th:name="selectedSkillIds" th:value="${skill.id}">
+          <span th:text="${skill.name}">Навык</span>
         </label>
-      </li>
-    </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label>Желаемые навыки партнера:</label>
+    <input type="text" id="searchDesiredSkill" placeholder="Поиск желаемых навыков..." class="form-control">
+    <div class="skills-container">
+      <div th:each="skill : ${allSkills}">
+        <label>
+          <input type="checkbox" th:name="selectedDesiredSkillIds" th:value="${skill.id}">
+          <span th:text="${skill.name}">Навык</span>
+        </label>
+      </div>
+    </div>
   </div>
 
   <div>
@@ -83,11 +417,49 @@
 </form>
 <script>
   $(document).ready(function() {
+    // Поиск навыков
     $("#searchSkill").on("keyup", function() {
       var value = $(this).val().toLowerCase();
-      $("#skillsList li").filter(function() {
+      $(".form-group:has(#searchSkill) .skills-container > div").filter(function() {
         $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
       });
+    });
+
+    // Поиск желаемых навыков партнера
+    $("#searchDesiredSkill").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $(".form-group:has(#searchDesiredSkill) .skills-container > div").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+
+    // Добавляем обработчик отправки формы
+    $('form').on('submit', function(e) {
+      e.preventDefault();
+      
+      // Проверка фотографий
+      const photoInput = document.getElementById('photoInput');
+      if (photoInput.files.length === 0) {
+        alert('Пожалуйста, загрузите хотя бы одну фотографию');
+        return false;
+      }
+
+      // Проверка навыков
+      const selectedSkills = $('input[name="selectedSkillIds"]:checked').length;
+      if (selectedSkills === 0) {
+        alert('Пожалуйста, выберите хотя бы один навык');
+        return false;
+      }
+
+      // Проверка желаемых навыков
+      const selectedDesiredSkills = $('input[name="selectedDesiredSkillIds"]:checked').length;
+      if (selectedDesiredSkills === 0) {
+        alert('Пожалуйста, выберите хотя бы один желаемый навык партнера');
+        return false;
+      }
+
+      // Если все проверки пройдены, отправляем форму
+      this.submit();
     });
 
     $("#addLinkButton").click(function() {
@@ -114,7 +486,70 @@
       `;
       $("#workExperienceContainer").append(newWorkExperienceInput);
     });
+  });
 
+  // Функционал загрузки фотографий
+  const uploadArea = document.getElementById('uploadArea');
+  const photoInput = document.getElementById('photoInput');
+  const previewArea = document.getElementById('previewArea');
+
+  function handleFiles(files) {
+    Array.from(files).forEach(file => {
+      if (file.type.startsWith('image/')) {
+        if (validateFileSize(file)) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const previewItem = document.createElement('div');
+            previewItem.className = 'preview-item';
+            previewItem.innerHTML = `
+              <img src="${e.target.result}" class="preview-image" alt="Preview">
+              <button type="button" class="remove-preview" onclick="this.parentElement.remove()">×</button>
+            `;
+            previewArea.appendChild(previewItem);
+          };
+          reader.onerror = handleUploadError;
+          reader.readAsDataURL(file);
+        }
+      } else {
+        alert('Пожалуйста, загружайте только изображения');
+      }
+    });
+  }
+
+  function validateFileSize(file) {
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      alert('Размер файла не должен превышать 10MB');
+      return false;
+    }
+    return true;
+  }
+
+  function handleUploadError(error) {
+    console.error('Ошибка при загрузке файла:', error);
+    alert('Произошла ошибка при загрузке файла. Пожалуйста, попробуйте еще раз.');
+  }
+
+  // Обработка перетаскивания файлов
+  uploadArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = '#6c5ce7';
+  });
+
+  uploadArea.addEventListener('dragleave', () => {
+    uploadArea.style.borderColor = '#ddd';
+  });
+
+  uploadArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    uploadArea.style.borderColor = '#ddd';
+    const files = e.dataTransfer.files;
+    handleFiles(files);
+  });
+
+  // Обработка выбора файлов через диалог
+  photoInput.addEventListener('change', (e) => {
+    handleFiles(e.target.files);
   });
 </script>
 </body>

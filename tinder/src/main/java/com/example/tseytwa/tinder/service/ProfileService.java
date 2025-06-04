@@ -2,6 +2,7 @@ package com.example.tseytwa.tinder.service;
 
 import com.example.tseytwa.tinder.dto.LinkDto;
 import com.example.tseytwa.tinder.dto.ProfileDto;
+import com.example.tseytwa.tinder.dto.ProfileWithMatchPercentageDto;
 import com.example.tseytwa.tinder.dto.WorkExperienceDto;
 import com.example.tseytwa.tinder.model.*;
 import com.example.tseytwa.tinder.repository.*;
@@ -12,49 +13,48 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class ProfileService {
 
     private final UserRepository userRepository;
     private final ProfileRepository profileRepository;
     private final MatchersRepository matchersRepository;
     private final SkillsRepository skillsRepository;
-    private final LinksRepository linksRepository;
-    private final WorkExperienceRepository workExperienceRepository;
+
 
     @Autowired
-    public ProfileService(UserRepository userRepository, ProfileRepository profileRepository,
+    public ProfileService(UserRepository userRepository,
+                          ProfileRepository profileRepository,
                           MatchersRepository matchersRepository,
-                          SkillsRepository skillsRepository, LinksRepository linksRepository, WorkExperienceRepository workExperienceRepository) {
+                          SkillsRepository skillsRepository) {
         this.userRepository = userRepository;
         this.profileRepository = profileRepository;
         this.matchersRepository = matchersRepository;
         this.skillsRepository = skillsRepository;
-        this.linksRepository = linksRepository;
-        this.workExperienceRepository = workExperienceRepository;
     }
 
     public Profile findById(int id) {
         return profileRepository.findById(id).orElse(null);
     }
 
-    public List<Profile> findAllMatchersByProfileId(int id) {
-        List<Match> matchList = matchersRepository.findAllByProfile1Id(id);
+    public Set<Profile> findAllMatchersByProfileId(int id) {
+        Set<Match> matchList = matchersRepository.findAllByProfile1Id(id);
         matchList.addAll(matchersRepository.findAllByProfile2Id(id));
         System.out.println(matchList);
-        List<Profile> profiles = matchList.stream()
+        Set<Profile> profiles = matchList.stream()
                 .map(match -> match.getProfile1().getId()!=id ? match.getProfile1() : match.getProfile2() )
-                .toList();
+                .collect(Collectors.toSet());
         return profiles;
     }
 
-    public List<Skills> findAllSkillsByProfileId(int id) {
+    public Set<Skills> findAllSkillsByProfileId(int id) {
         return profileRepository.findById(id).get().getSkills();
     }
 
-    @Transactional
-    public void createProfileForUser(String username, ProfileDto profileDto) {
+    public Profile createProfileForUser(String username, ProfileDto profileDto) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
@@ -65,12 +65,17 @@ public class ProfileService {
         Profile profile = new Profile();
         profile.setName(profileDto.getName());
         profile.setAge(profileDto.getAge());
+        profile.setDescription(profileDto.getDescription());
+        profile.setUser(user);
         
-        // Get skills by IDs
-        List<Skills> selectedSkills = skillsRepository.findAllByIdIn(profileDto.getSelectedSkillIds());
+        Set<Skills> selectedSkills = skillsRepository.findAllByIdIn(profileDto.getSelectedSkillIds());
         profile.setSkills(selectedSkills);
         
-        List<Links> newLinks = new ArrayList<>();
+        // Save desired skills
+        Set<Skills> selectedDesiredSkills = skillsRepository.findAllByIdIn(profileDto.getSelectedDesiredSkillIds());
+        profile.setDesiredSkills(selectedDesiredSkills);
+
+        Set<Links> newLinks = new HashSet<>();
 
         for (LinkDto links: profileDto.getLinks()){
             Links link = new Links();
@@ -81,8 +86,7 @@ public class ProfileService {
         }
         profile.setLinks(newLinks);
 
-
-        List<WorkExperience> newWorkExperiences = new ArrayList<>();
+        Set<WorkExperience> newWorkExperiences = new HashSet<>();
         for (WorkExperienceDto experienceDto: profileDto.getWorkExperiences()){
             WorkExperience experience = new WorkExperience();
             experience.setProfile(profile);
@@ -94,10 +98,9 @@ public class ProfileService {
             newWorkExperiences.add(experience);
         }
 
-
         profile.setWorkExperience(newWorkExperiences);
 
-        profileRepository.save(profile);
+        return profileRepository.save(profile);
     }
 
     public Optional<Profile> findByUser(User user) {
@@ -120,10 +123,12 @@ public class ProfileService {
         // Обновляем основные поля
         profile.setName(profileDto.getName());
         profile.setAge(profileDto.getAge());
+        profile.setDescription(profileDto.getDescription());
 
 
 
         updateSkills(profile, profileDto);
+        updateDesiredSkills(profile, profileDto);
         updateProfileLinks(profile, profileDto);
         updateWorkExperiences(profile, profileDto);
 
@@ -132,19 +137,29 @@ public class ProfileService {
 
     @Transactional
     public void updateSkills(Profile profile, ProfileDto profileDto) {
-        List<Skills> currentSkills = profile.getSkills();
+        Set<Skills> currentSkills = profile.getSkills();
         currentSkills.clear();
 
         // Get all selected skills from the database
-        List<Skills> selectedSkills = skillsRepository.findAllByIdIn(profileDto.getSelectedSkillIds());
+        Set<Skills> selectedSkills = skillsRepository.findAllByIdIn(profileDto.getSelectedSkillIds());
         
         currentSkills.addAll(selectedSkills);
     }
 
     @Transactional
+    public void updateDesiredSkills(Profile profile, ProfileDto profileDto) {
+        Set<Skills> currentDesiredSkills = profile.getDesiredSkills();
+        currentDesiredSkills.clear();
+
+        Set<Skills> selectedDesiredSkills = skillsRepository.findAllByIdIn(profileDto.getSelectedDesiredSkillIds());
+
+        currentDesiredSkills.addAll(selectedDesiredSkills);
+    }
+
+    @Transactional
     public void updateProfileLinks(Profile profile, ProfileDto profileDto) {
         // Получаем текущие ссылки
-        List<Links> currentLinks = profile.getLinks();
+        Set<Links> currentLinks = profile.getLinks();
 
         // Очищаем текущий список (orphanRemoval удалит их из БД)
         currentLinks.clear();
@@ -158,13 +173,11 @@ public class ProfileService {
             currentLinks.add(link); // Добавляем в управляемую коллекцию
         });
 
-        // Не нужно явно сохранять - каскадирование сделает это
     }
 
-    @Transactional
     public void updateWorkExperiences(Profile profile, ProfileDto profileDto) {
         // Получаем текущий опыт работы
-        List<WorkExperience> currentExperiences = profile.getWorkExperience();
+        Set<WorkExperience> currentExperiences = profile.getWorkExperience();
 
         // Очищаем текущий список (orphanRemoval удалит их из БД)
         currentExperiences.clear();
@@ -180,5 +193,102 @@ public class ProfileService {
             exp.setDescription(expDto.getDescription());
             currentExperiences.add(exp); // Добавляем в управляемую коллекцию
         });
+    }
+
+    public Profile findByUserUsername(String username) {
+        User user = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return profileRepository.findByUser(user)
+            .orElseThrow(() -> new IllegalStateException("Profile not found"));
+    }
+
+    public ProfileDto toProfileDto(Profile profile) {
+        ProfileDto dto = new ProfileDto();
+        dto.setName(profile.getName());
+        dto.setAge(profile.getAge());
+        dto.setDescription(profile.getDescription());
+        dto.setSelectedSkillIds(
+            profile.getSkills().stream()
+                .map(Skills::getId)
+                .toList()
+        );
+        dto.setSelectedDesiredSkillIds(
+             profile.getDesiredSkills().stream()
+                .map(Skills::getId)
+                .toList()
+        );
+        dto.setLinks(
+            profile.getLinks().stream().map(link -> {
+                LinkDto linkDto = new LinkDto();
+                linkDto.setSocial(link.getSocial());
+                linkDto.setLink(link.getLink());
+                return linkDto;
+            }).toList()
+        );
+        dto.setWorkExperiences(
+            profile.getWorkExperience().stream().map(exp -> {
+                WorkExperienceDto expDto = new WorkExperienceDto();
+                expDto.setCompany(exp.getCompany());
+                expDto.setPost(exp.getPost());
+                expDto.setDescription(exp.getDescription());
+                expDto.setStartedAt(exp.getStartedAt());
+                expDto.setEndedAt(exp.getEndedAt());
+                return expDto;
+            }).toList()
+        );
+        return dto;
+    }
+
+    public List<Profile> findAll() {
+        return profileRepository.findAll();
+    }
+
+    public List<ProfileWithMatchPercentageDto> findProfilesToShow(Integer myProfileId) {
+        Profile myProfile = profileRepository.findById(myProfileId)
+                .orElseThrow(() -> new NoSuchElementException("My profile not found"));
+        List<Profile> allProfiles = profileRepository.findAll();
+
+        List<Profile> potentialPartners = allProfiles.stream()
+                .filter(profile -> !myProfile.getSkippedProfiles().contains(profile) &&
+                        !myProfile.getLikedProfiles().contains(profile) &&
+                        !profile.equals(myProfile))
+                .collect(Collectors.toList());
+
+        List<ProfileWithMatchPercentageDto> profilesWithPercentage = new ArrayList<>();
+
+        Set<Skills> myDesiredSkills = myProfile.getDesiredSkills();
+
+        for (Profile potentialPartner : potentialPartners) {
+            Set<Skills> partnerSkills = potentialPartner.getSkills();
+            Set<Skills> partnerDesiredSkills = potentialPartner.getDesiredSkills();
+
+            int mutualDesiredSkillsCount = 0;
+            int myDesiredSkillsCount = myDesiredSkills.size();
+            int partnerDesiredSkillsCount = partnerDesiredSkills.size();
+
+            for (Skills desiredSkill : myDesiredSkills) {
+                if (partnerSkills.contains(desiredSkill)) {
+                    mutualDesiredSkillsCount++;
+                }
+            }
+
+            for (Skills partnerDesiredSkill : partnerDesiredSkills) {
+                 if (myProfile.getSkills().contains(partnerDesiredSkill)) {
+                     mutualDesiredSkillsCount++;
+                 }
+            }
+
+            int totalDesiredSkillsConsidered = myDesiredSkillsCount + partnerDesiredSkillsCount;
+            int matchPercentage = 0;
+            if (totalDesiredSkillsConsidered > 0) {
+                matchPercentage = (int) ((double) mutualDesiredSkillsCount / totalDesiredSkillsConsidered * 100);
+            }
+
+            profilesWithPercentage.add(new ProfileWithMatchPercentageDto(potentialPartner, matchPercentage));
+        }
+
+        profilesWithPercentage.sort(Comparator.comparingInt(ProfileWithMatchPercentageDto::getMatchPercentage).reversed());
+
+        return profilesWithPercentage;
     }
 }

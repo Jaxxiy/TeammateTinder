@@ -3,10 +3,6 @@ package com.example.tseytwa.tinder.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,6 +21,7 @@ public class Profile {
     private String name;
     @Positive
     private Integer age;
+    private String description;
     @ManyToMany
     @JoinTable(
             name = "features",
@@ -41,14 +38,11 @@ public class Profile {
     )
     private Set<Profile> likedProfiles;
 
-    @ManyToMany(mappedBy = "likedProfiles")
-    private Set<Profile> likedByProfiles;
-
     @OneToMany(mappedBy = "profile1")
-    private List<Match> matchesAsProfile1;
+    private Set<Match> matchesAsProfile1;
 
     @OneToMany(mappedBy = "profile2")
-    private List<Match> matchesAsProfile2;
+    private Set<Match> matchesAsProfile2;
 
     @ManyToMany
     @JoinTable(
@@ -56,48 +50,42 @@ public class Profile {
             joinColumns = @JoinColumn(name = "profile_id"),
             inverseJoinColumns = @JoinColumn(name = "skill_id")
     )
-    private List<Skills> skills;
+    private Set<Skills> skills;
+
+    @ManyToMany
+    @JoinTable(
+            name = "profile_desired_skills",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id")
+    )
+    private Set<Skills> desiredSkills;
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Links> links;
+    private Set<Links> links;
 
     @OneToMany(mappedBy = "profile", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<WorkExperience> workExperience;
+    private Set<WorkExperience> workExperience;
+
+    @ManyToMany
+    @JoinTable(
+            name = "skipped_profiles",
+            joinColumns = @JoinColumn(name = "skipper_id"),
+            inverseJoinColumns = @JoinColumn(name = "skipped_id")
+    )
+    private Set<Profile> skippedProfiles;
 
     public Profile() {
         features = new HashSet<>();
         likedProfiles = new HashSet<>();
-        likedByProfiles = new HashSet<>();
-        matchesAsProfile1 = new ArrayList<>();
-        matchesAsProfile2 = new ArrayList<>();
-        links = new ArrayList<>();
-        skills = new ArrayList<>();
-        workExperience = new ArrayList<>();
+        matchesAsProfile1 = new HashSet<>();
+        matchesAsProfile2 = new HashSet<>();
+        links = new HashSet<>();
+        skills = new HashSet<>();
+        workExperience = new HashSet<>();
+        skippedProfiles = new HashSet<>();
+        desiredSkills = new HashSet<>();
     }
 
-    public List<WorkExperience> getWorkExperience() {
-        return workExperience;
-    }
-
-    public void setWorkExperience(List<WorkExperience> workExperience) {
-        this.workExperience = workExperience;
-    }
-
-    public List<Links> getLinks() {
-        return links;
-    }
-
-    public void setLinks(List<Links> links) {
-        this.links = links;
-    }
-
-    public List<Skills> getSkills() {
-        return skills;
-    }
-
-    public void setSkills(List<Skills> skills) {
-        this.skills = skills;
-    }
 
     public Integer getId() {
         return id;
@@ -123,6 +111,22 @@ public class Profile {
         this.age = age;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
     public Set<Profile> getFeatures() {
         return features;
     }
@@ -139,36 +143,60 @@ public class Profile {
         this.likedProfiles = likedProfiles;
     }
 
-    public Set<Profile> getLikedByProfiles() {
-        return likedByProfiles;
-    }
-
-    public void setLikedByProfiles(Set<Profile> likedByProfiles) {
-        this.likedByProfiles = likedByProfiles;
-    }
-
-    public List<Match> getMatchesAsProfile1() {
+    public Set<Match> getMatchesAsProfile1() {
         return matchesAsProfile1;
     }
 
-    public void setMatchesAsProfile1(List<Match> matchesAsProfile1) {
+    public void setMatchesAsProfile1(Set<Match> matchesAsProfile1) {
         this.matchesAsProfile1 = matchesAsProfile1;
     }
 
-    public List<Match> getMatchesAsProfile2() {
+    public Set<Match> getMatchesAsProfile2() {
         return matchesAsProfile2;
     }
 
-    public void setMatchesAsProfile2(List<Match> matchesAsProfile2) {
+    public void setMatchesAsProfile2(Set<Match> matchesAsProfile2) {
         this.matchesAsProfile2 = matchesAsProfile2;
     }
 
-    public User getUser() {
-        return user;
+    public Set<Skills> getSkills() {
+        return skills;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setSkills(Set<Skills> skills) {
+        this.skills = skills;
+    }
+
+    public Set<Skills> getDesiredSkills() {
+        return desiredSkills;
+    }
+
+    public void setDesiredSkills(Set<Skills> desiredSkills) {
+        this.desiredSkills = desiredSkills;
+    }
+
+    public Set<Links> getLinks() {
+        return links;
+    }
+
+    public void setLinks(Set<Links> links) {
+        this.links = links;
+    }
+
+    public Set<WorkExperience> getWorkExperience() {
+        return workExperience;
+    }
+
+    public void setWorkExperience(Set<WorkExperience> workExperience) {
+        this.workExperience = workExperience;
+    }
+
+    public Set<Profile> getSkippedProfiles() {
+        return skippedProfiles;
+    }
+
+    public void setSkippedProfiles(Set<Profile> skippedProfiles) {
+        this.skippedProfiles = skippedProfiles;
     }
 
     @Override

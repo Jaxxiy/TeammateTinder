@@ -2,59 +2,178 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Matches</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: sans-serif;
-            margin: 20px;
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --accent-color: #fd79a8;
+            --dark-color: #2d3436;
+            --light-color: #f5f6fa;
+            --success-color: #00b894;
+            --danger-color: #d63031;
+            --text-color: #2d3436;
+            --text-light: #636e72;
+            --border-color: #ccc;
         }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Навигационная панель */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 70%;
+        }
+
+        /* Кнопка выхода */
+        .logout-button {
+            position: absolute;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background-color: #ff5252;
+        }
+
+        /* Основное содержимое */
         .container {
             display: flex;
             flex-direction: column;
             align-items: center;
+            flex: 1;
+            padding: 2rem;
         }
 
+        h1 {
+            margin-bottom: 2rem;
+            color: var(--dark-color);
+        }
+
+        /* Панель вкладок */
         .tab-bar {
             display: flex;
-            margin-bottom: 20px;
+            margin-bottom: 2rem;
         }
 
         .tab {
             padding: 10px 20px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-color);
             border-radius: 5px;
             cursor: pointer;
             margin-right: 10px;
-            background-color: #f0f0f0;
+            background-color: var(--light-color);
+            transition: background-color 0.3s ease;
+        }
+
+        .tab a {
+            text-decoration: none;
+            color: var(--text-color);
         }
 
         .tab.active {
-            background-color: #ddd;
+            background-color: var(--secondary-color);
         }
 
+        /* Карточка матча */
         .match-card {
             width: 80%;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            padding: 15px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
             border-radius: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
         }
 
         .profile-info {
-            display: flex;
-            flex-direction: column;
+            flex-grow: 1;
         }
 
         .image-container {
             width: 100px;
             height: 100px;
-            background-color: #eee;
+            background-color: var(--light-color);
             border-radius: 10px;
-            margin-right: 15px;
+            margin-right: 1.5rem;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -66,56 +185,171 @@
         }
 
         .skills {
-            margin-top: 10px;
+            margin-top: 1rem;
         }
 
         .skill-tag {
-            padding: 5px 10px;
-            background-color: #e0e0e0;
-            border-radius: 5px;
-            margin-right: 5px;
+            padding: 0.5rem 1rem;
+            background-color: var(--secondary-color);
+            border-radius: 20px;
+            margin-right: 0.5rem;
             font-size: small;
+            display: inline-block;
         }
 
         .match-date {
             font-size: small;
-            color: #777;
+            color: var(--text-light);
         }
 
-        .message-button {
-            background-color: #3498db;
+        /* Кнопка сообщения */
+        .chat-button {
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            padding: 8px 15px;
+            padding: 0.8rem 1.5rem;
             border-radius: 5px;
             cursor: pointer;
             font-size: small;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
         }
+
+        .chat-button:hover {
+            background-color: var(--accent-color);
+        }
+        .favorite-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #ccc;
+            position: relative;
+            width: 24px;
+            height: 24px;
+            padding: 0;
+            margin-left: 10px;
+        }
+
+        .favorite-button .fas {
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #ff4081;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .favorite-button .far {
+            transition: opacity 0.3s;
+        }
+
+        .favorite-button.favorited .far {
+            opacity: 0;
+        }
+
+        .favorite-button.favorited .fas {
+            opacity: 1;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .match-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .image-container {
+                margin-bottom: 1rem;
+            }
+        }
+
+        /* Добавляем стили для миниатюр профилей */
+        .profile-thumbnail {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const favoriteButtons = document.querySelectorAll('.favorite-button');
+            
+            favoriteButtons.forEach(button => {
+                button.addEventListener('click', async function() {
+                    const profileId = this.getAttribute('data-profile-id');
+                    const isFavorited = this.classList.contains('favorited');
+                    
+                    try {
+                        const response = await fetch(isFavorited ? '/features/remove' : '/features/add', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ id: profileId })
+                        });
+
+                        if (response.ok) {
+                            this.classList.toggle('favorited');
+                        } else {
+                            console.error('Failed to update favorite status');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
 </head>
 <body>
+<nav class="navbar">
+    <ul class="nav-links">
+        <li><a th:href="@{/main}">Главная</a></li>
+        <li><a th:href="@{/chat}">Чат</a></li>
+        <li><a th:href="@{/matchers/{profileId}(profileId=${profileId})}">Мэтчи</a></li>
+        <li><a th:href="@{/likes/{profileId}(profileId=${profileId})}">Лайки</a></li>
+        <li><a th:href="@{/features/{profileId}(profileId=${profileId})}">Избранное</a></li>
+        <li><a th:href="@{/profile/{profileId}(profileId=${profileId})}">Профиль</a></li>
+    </ul>
+    <form th:action="@{/auth/logout}" method="post" style="display: inline;">
+        <button type="submit" class="logout-button">Выйти</button>
+    </form>
+</nav>
 <div class="container">
-    <h1>DevMatch</h1>
-
-    <div class="tab-bar">
-        <div class="tab acitve">Matches</div>
-        <div class="tab">
-        <a th:href="@{/likes/{profileId}(profileId=${profileId})}">Likes</a>
-        </div>
-        <div class="tab">
-        <a th:href="@{/features/{profileId}(profileId=${profileId})}">Features</a>
-        </div>
-    </div>
 
     <div th:each="match : ${matchers}" class="match-card">
-        <div class="profile-info">
-            <h2 th:text="${match.getName()}"></h2>
-            <div class="skills">
-                <span th:each="skill : ${skills}" class="skill-tag" th:text="${skill.getName()}"></span>
+        <div class="profile-item">
+            <img th:if="${match.mainPhotoId != null}" 
+                 th:src="@{'/api/photos/' + ${match.mainPhotoId}}" 
+                 class="profile-thumbnail" 
+                 alt="Profile photo">
+            <img th:unless="${match.mainPhotoId != null}" 
+                 src="/images/default-avatar.png" 
+                 class="profile-thumbnail" 
+                 alt="Default avatar">
+            <div class="profile-info">
+                <h2 th:text="${match.getProfile().getName()}"></h2>
+                <div class="skills">
+                    <span th:each="skill : ${match.getProfile().getSkills()}" class="skill-tag" th:text="${skill.getName()}"></span>
+                </div>
             </div>
         </div>
-        <div>
-            <a th:href="@{/chat}" class="chat-button">Send Message</a>
+        <div class="action-buttons">
+            <button class="favorite-button"
+                    th:classappend="${match.isFavourite()} ? 'favorited' : ''"
+                    th:data-profile-id="${match.getProfile().getId()}">
+                <i class="far fa-heart"></i>
+                <i class="fas fa-heart"></i>
+            </button>
+            <a th:href="@{'/chat/'+${match.getChatId()}}" class="chat-button">Send Message</a>
         </div>
     </div>
 </div>

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/chat")
@@ -45,9 +46,7 @@ public class ChatController {
 
         model.addAttribute("profile", profile);
         model.addAttribute("chats", chats);
-        //todo взяли профиль, добавляем в модель все переписки этого чела,
-        // имя типа с кем общается
-        // последнее сообщение и его дата
+
         return "chatsList";
     }
 
@@ -56,6 +55,10 @@ public class ChatController {
                        Authentication auth,
                        @PathVariable int id) {
         Chat chat = chatService.findChatById(id);
+        if (chat == null) {
+            return "redirect:/chat";
+        }
+        
         List<ChatMessage> messages = chatService.getChatMessagesBetweenUsers(chat.getUserId().getId(), chat.getUserWith().getId());
 
         User user = userService.findByUsername(auth.getName()).get();

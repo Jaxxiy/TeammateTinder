@@ -4,43 +4,296 @@
     <meta charset="UTF-8">
     <title>Просмотр профиля</title>
     <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --accent-color: #fd79a8;
+            --dark-color: #2d3436;
+            --light-color: #f5f6fa;
+            --success-color: #00b894;
+            --danger-color: #d63031;
+            --text-color: #2d3436;
+            --text-light: #636e72;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Навигационная панель */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 70%;
+        }
+
+        /* Контейнер профиля */
         .profile-container {
             max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
+            margin: 2rem auto;
+            padding: 2rem;
             border: 1px solid #ddd;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
         }
+
         .profile-header {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 2rem;
+            color: var(--dark-color);
         }
+
         .profile-details {
-            margin-bottom: 15px;
+            margin-bottom: 1.5rem;
         }
-        .skills-list, .links-list {
+
+        .profile-details h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .skills-list, .links-list, .work-experience-list {
             list-style-type: none;
             padding: 0;
         }
-        .skills-list li, .links-list li {
-            background-color: #f0f0f0;
-            margin: 5px 0;
-            padding: 8px;
+
+        .skills-list li, .links-list li, .work-experience-item {
+            background-color: var(--light-color);
+            margin: 0.5rem 0;
+            padding: 1rem;
             border-radius: 4px;
         }
+
         .links-list li a {
-            color: #007bff;
+            color: var(--accent-color);
             text-decoration: none;
         }
+
         .links-list li a:hover {
             text-decoration: underline;
+        }
+
+        .work-experience-item p {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Кнопка редактирования */
+        .edit-button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+            transition: background-color 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .edit-button:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .profile-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+        }
+
+        /* Стили для фотографий */
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .photo-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .profile-photo {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .main-photo-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: var(--success-color);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+        }
+
+        .photo-actions {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .photo-item:hover .photo-actions {
+            opacity: 1;
+        }
+
+        .set-main-btn, .delete-photo-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .set-main-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .delete-photo-btn {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .set-main-btn:hover {
+            background-color: var(--accent-color);
+        }
+
+        .delete-photo-btn:hover {
+            background-color: #ff5252;
+        }
+
+        /* Кнопка выхода */
+        .logout-button {
+            position: absolute;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background-color: #ff5252;
         }
     </style>
 </head>
 <body>
+<nav class="navbar">
+    <ul class="nav-links">
+        <li><a th:href="@{/main}">Главная</a></li>
+        <li><a th:href="@{/chat}">Чат</a></li>
+        <li><a th:href="@{'/matchers/'+${myProfileId}}">Мэтчи</a></li>
+        <li><a th:href="@{'/likes/'+${myProfileId}}">Лайки</a></li>
+        <li><a th:href="@{'/features/'+${myProfileId}}">Избранное</a></li>
+        <li><a th:href="@{'/profile/'+${myProfileId}}">Профиль</a></li>
+    </ul>
+    <form th:action="@{/auth/logout}" method="post" style="display: inline;">
+        <button type="submit" class="logout-button">Выйти</button>
+    </form>
+</nav>
 <div class="profile-container">
     <h1 class="profile-header">Профиль пользователя</h1>
+
+    <!-- Секция фотографий -->
+    <div class="profile-details">
+        <h3>Фотографии:</h3>
+        <div class="photos-grid">
+            <div th:each="photo : ${photos}" class="photo-item">
+                <img th:src="@{'/api/photos/' + ${photo.id}}" 
+                     th:alt="${photo.fileName}"
+                     class="profile-photo">
+                <div th:if="${photo.main}" class="main-photo-badge">Главное фото</div>
+                <div th:if="${profile.getId()==myProfileId}" class="photo-actions">
+                    <button th:if="${!photo.main}" 
+                            th:data-photo-id="${photo.id}"
+                            class="set-main-btn">Сделать главным</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="profile-details">
         <p><strong>Имя:</strong> <span th:text="${profile.name}"></span></p>
@@ -55,27 +308,79 @@
     </div>
 
     <div class="profile-details">
+        <h3>Желаемые навыки партнера:</h3>
+        <ul class="skills-list">
+            <li th:each="skill : ${profile.desiredSkills}" th:text="${skill.name}"></li>
+        </ul>
+    </div>
+
+    <div class="profile-details" th:if="${profile.links != null and !#lists.isEmpty(profile.links)}">
         <h3>Ссылки:</h3>
         <ul class="links-list">
             <li th:each="link : ${profile.links}">
-                <a th:href="${link.link}" th:text="${link.social}" target="_blank"></a>
+                <a th:href="${link.url}" th:text="${link.social}" target="_blank">Ссылка</a>
             </li>
         </ul>
     </div>
 
-    <div class="profile-details">
+    <div class="profile-details" th:if="${profile.workExperiences != null and !#lists.isEmpty(profile.workExperiences)}">
         <h3>Опыт работы:</h3>
         <ul class="work-experience-list">
-            <li th:each="workExperience : ${profile.workExperience}" class="work-experience-item">
-                <p><strong>Компания:</strong> <span th:text="${workExperience.company}"></span></p>
-                <p><strong>Должность:</strong> <span th:text="${workExperience.post}"></span></p>
-                <p><strong>Описание:</strong> <span th:text="${workExperience.description}"></span></p>
-                <p><strong>Год начала:</strong> <span th:text="${workExperience.startedAt}"></span></p>
-                <p><strong>Год окончания:</strong> <span th:text="${workExperience.endedAt}"></span></p>
+            <li th:each="work : ${profile.workExperiences}" class="work-experience-item">
+                <p><strong>Компания:</strong> <span th:text="${work.company}"></span></p>
+                <p><strong>Должность:</strong> <span th:text="${work.post}"></span></p>
+                <p><strong>Описание:</strong> <span th:text="${work.description}"></span></p>
+                <p><strong>Период:</strong> <span th:text="${work.startedAt} + ' - ' + ${work.endedAt}"></span></p>
             </li>
         </ul>
     </div>
 
+    <!-- Ссылка редактирования -->
+    <div th:if="${profile.getId()==myProfileId}">
+        <a th:href="@{/profile/edit}" class="edit-button">Изменить</a>
+    </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработчик для кнопки "Сделать главным"
+    document.querySelectorAll('.set-main-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const photoId = this.getAttribute('data-photo-id');
+            setMainPhoto(photoId);
+        });
+    });
+
+    // Обработчик для кнопки "Удалить"
+    document.querySelectorAll('.delete-photo-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const photoId = this.getAttribute('data-photo-id');
+            deletePhoto(photoId);
+        });
+    });
+});
+
+function setMainPhoto(photoId) {
+    fetch(`/api/photos/${photoId}/main`, {
+        method: 'PUT'
+    }).then(response => {
+        if (response.ok) {
+            window.location.reload();
+        }
+    });
+}
+
+function deletePhoto(photoId) {
+    if (confirm('Вы уверены, что хотите удалить это фото?')) {
+        fetch(`/api/photos/${photoId}`, {
+            method: 'DELETE'
+        }).then(response => {
+            if (response.ok) {
+                window.location.reload();
+            }
+        });
+    }
+}
+</script>
 </body>
 </html>

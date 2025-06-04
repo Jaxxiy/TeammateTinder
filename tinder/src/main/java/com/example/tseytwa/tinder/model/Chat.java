@@ -1,8 +1,7 @@
 package com.example.tseytwa.tinder.model;
 
 import jakarta.persistence.*;
-
-
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "chat")
@@ -17,7 +16,7 @@ public class Chat {
     @JoinColumn(name = "user_with")
     private Profile userWith;
     @OneToMany(mappedBy = "chat",cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<ChatMessage> messages;
+    private List<ChatMessage> messages = new ArrayList<>();
 
     public Integer getId() {
         return id;

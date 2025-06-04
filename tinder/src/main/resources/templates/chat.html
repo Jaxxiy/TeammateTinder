@@ -6,71 +6,141 @@
   <title>Чат</title>
   <style>
     :root {
-      --primary-color: #ff4757;
-      --secondary-color: #ff6b81;
-      --bg-color: #f1f2f6;
-      --message-bg: #ffffff;
-      --other-message-bg: #dfe4ea;
-      --text-color: #2f3542;
-      --time-color: #747d8c;
-      --border-color: #ced6e0;
+      --primary-color: #6c5ce7;
+      --secondary-color: #a29bfe;
+      --accent-color: #fd79a8;
+      --dark-color: #2d3436;
+      --light-color: #f5f6fa;
+      --success-color: #00b894;
+      --danger-color: #d63031;
+      --text-color: #2d3436;
+      --text-light: #636e72;
+      --border-color: #ddd;
     }
 
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      font-family: 'Poppins', sans-serif;
     }
 
     body {
-      background-color: var(--bg-color);
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--light-color);
       color: var(--text-color);
-      height: 100vh;
+      line-height: 1.6;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
     }
 
+    /* Навигационная панель */
+    .navbar {
+      background-color: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      justify-content: center;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-light);
+      font-weight: 500;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary-color);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 2px;
+      background: var(--primary-color);
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: width 0.3s ease;
+    }
+
+    .nav-links a:hover::after {
+      width: 70%;
+    }
+    /* Chat Page Styles */
     .header {
-      background-color: var(--primary-color);
-      color: white;
-      padding: 15px 20px;
+      background-color: white;
+      padding: 1rem 2rem;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 60px; /* Высота навбара */
+      z-index: 90;
     }
 
     .back-btn {
-      color: white;
+      color: var(--primary-color);
+      font-size: 1.5rem;
       text-decoration: none;
-      font-size: 20px;
-      margin-right: 15px;
+      margin-right: 1rem;
+      transition: color 0.3s ease;
+    }
+
+    .back-btn:hover {
+      color: var(--accent-color);
     }
 
     .chat-info {
-      display: flex;
-      align-items: center;
+      flex-grow: 1;
     }
 
     .chat-name {
-      font-weight: 600;
-      font-size: 18px;
+      color: var(--dark-color);
+      font-size: 1.2rem;
     }
 
     .messages-container {
-      flex: 1;
-      padding: 20px;
+      flex-grow: 1;
+      padding: 1.5rem;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
+      gap: 1rem;
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-chat {
+      text-align: center;
+      color: var(--text-light);
+      margin-top: 2rem;
     }
 
     .message {
       max-width: 70%;
-      margin-bottom: 15px;
-      padding: 12px 15px;
-      border-radius: 18px;
+      padding: 0.8rem 1.2rem;
+      border-radius: 15px;
       position: relative;
       word-wrap: break-word;
     }
@@ -84,65 +154,120 @@
 
     .other-message {
       align-self: flex-start;
-      background-color: var(--message-bg);
-      border: 1px solid var(--border-color);
+      background-color: var(--accent-color);
+      color: var(--text-color);
       border-bottom-left-radius: 5px;
     }
 
     .message-time {
-      font-size: 12px;
-      color: var(--time-color);
-      margin-top: 5px;
+      font-size: 0.7rem;
+      opacity: 0.8;
       text-align: right;
+      margin-top: 0.3rem;
     }
 
     .my-message .message-time {
-      color: rgba(255,255,255,0.8);
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .other-message .message-time {
+      color: rgb(200, 21, 21);
     }
 
     .input-area {
-      padding: 15px;
-      background-color: white;
-      border-top: 1px solid var(--border-color);
       display: flex;
-      gap: 10px;
+      padding: 1rem;
+      background-color: white;
+      position: sticky;
+      bottom: 0;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+      max-width: 800px;
+      width: 100%;
+      margin: 0 auto;
+      border-radius: 30px;
     }
 
     .message-input {
-      flex: 1;
-      padding: 12px 15px;
+      flex-grow: 1;
+      padding: 0.8rem 1.2rem;
       border: 1px solid var(--border-color);
       border-radius: 25px;
       outline: none;
-      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    .message-input:focus {
+      border-color: var(--primary-color);
     }
 
     .send-btn {
       background-color: var(--primary-color);
       color: white;
       border: none;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin-left: 1rem;
       cursor: pointer;
-      transition: background-color 0.2s;
+      transition: background-color 0.3s ease;
     }
 
     .send-btn:hover {
-      background-color: var(--secondary-color);
+      background-color: var(--accent-color);
     }
 
-    .empty-chat {
-      text-align: center;
-      margin-top: 50px;
-      color: var(--time-color);
+    /* Кнопка выхода */
+    .logout-button {
+      position: absolute;
+      right: 2rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: var(--danger-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-weight: 500;
+      text-decoration: none;
+      transition: background-color 0.3s ease;
     }
+
+    .logout-button:hover {
+      background-color: #ff5252;
+    }
+
   </style>
 </head>
 <body>
+<nav class="navbar">
+  <ul class="nav-links">
+    <li><a th:href="@{/main}">Главная</a></li>
+    <li><a th:href="@{/chat}">Чат</a></li>
+    <li><a th:href="@{/matchers/{profileId}(profileId=${myProfile.getId()})}">Мэтчи</a></li>
+    <li><a th:href="@{/likes/{profileId}(profileId=${myProfile.getId()})}">Лайки</a></li>
+    <li><a th:href="@{/features/{profileId}(profileId=${myProfile.getId()})}">Избранное</a></li>
+    <li><a th:href="@{/profile/{profileId}(profileId=${myProfile.getId()})}">Профиль</a></li>
+  </ul>
+  <form th:action="@{/auth/logout}" method="post" style="display: inline;">
+    <button type="submit" class="logout-button">Выйти</button>
+  </form>
+</nav>
+<div class="chat-container">
+    <div class="chat-list">
+        <div th:each="chat : ${chats}" class="chat-item" th:onclick="'openChat(' + ${chat.id} + ')'">
+            <div class="chat-avatar">
+                <img th:src="${chat.userWith.avatarUrl != null ? chat.userWith.avatarUrl : '/images/default-avatar.png'}" alt="Avatar">
+            </div>
+            <div class="chat-info">
+                <div class="chat-name" th:text="${chat.userWith.name}">Имя пользователя</div>
+                <div class="chat-last-message" th:if="${chat.messages != null and not #lists.isEmpty(chat.messages)}" th:text="${chat.messages[__${#lists.size(chat.messages) - 1}__].content}">Последнее сообщение</div>
+                <div class="chat-last-message" th:unless="${chat.messages != null and not #lists.isEmpty(chat.messages)}">Нет сообщений</div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="header">
   <a th:href="@{/chat}" class="back-btn">←</a>
   <div class="chat-info">

@@ -4,7 +4,6 @@ import com.example.tseytwa.tinder.model.User;
 import com.example.tseytwa.tinder.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service

@@ -13,7 +13,9 @@ public class ProfileDto {
     private String name;
     @Positive
     private Integer age;
+    private String description;
     private List<Integer> selectedSkillIds;
+    private List<Integer> selectedDesiredSkillIds;
     private List<LinkDto> links;
     private List<WorkExperienceDto> workExperiences;
 
@@ -21,6 +23,7 @@ public class ProfileDto {
         selectedSkillIds = new ArrayList<>();
         links = new ArrayList<>();
         workExperiences = new ArrayList<>();
+        selectedDesiredSkillIds = new ArrayList<>();
     }
 
     public List<Integer> getSelectedSkillIds() {
@@ -29,6 +32,14 @@ public class ProfileDto {
 
     public void setSelectedSkillIds(List<Integer> selectedSkillIds) {
         this.selectedSkillIds = selectedSkillIds;
+    }
+
+    public List<Integer> getSelectedDesiredSkillIds() {
+        return selectedDesiredSkillIds;
+    }
+
+    public void setSelectedDesiredSkillIds(List<Integer> selectedDesiredSkillIds) {
+        this.selectedDesiredSkillIds = selectedDesiredSkillIds;
     }
 
     public List<WorkExperienceDto> getWorkExperiences() {
@@ -62,6 +73,14 @@ public class ProfileDto {
 
     public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
 }

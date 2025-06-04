@@ -3,23 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <title>Register</title>
-    <link rel="stylesheet" href="/css/auth.css">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --accent-color: #fd79a8;
+            --dark-color: #2d3436;
+            --light-color: #efefef;
+            --success-color: #00b894;
+            --danger-color: #d63031;
+            --text-color: #2d3436;
+            --text-light: #636e72;
+            --border-color: #ddd;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Контейнер регистрации */
+        .auth-container {
+            max-width: 400px;
+            width: 100%;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .auth-container h1 {
+            margin-bottom: 1.5rem;
+            color: var(--dark-color);
+        }
+
+        /* Форма регистрации */
+        #registerForm {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        /* Кнопка регистрации */
+        #registerForm button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.8rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        #registerForm button:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* Ссылка на вход */
+        .auth-container p {
+            margin-top: 1rem;
+        }
+
+        .auth-container a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-container a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
 </head>
 <body>
 <div class="auth-container">
-    <h1>Register</h1>
+    <h1>Регистрация</h1>
     <form  id="registerForm" action="/auth/register" method="post">
         <div class="form-group">
-            <label for="username">Username:</label>
+            <label for="username">Логин:</label>
             <input type="text" id="username" name="username" required>
         </div>
         <div class="form-group">
-            <label for="password">Password:</label>
+            <label for="password">Пароль:</label>
             <input type="password" id="password" name="password" required>
         </div>
-        <button type="submit">Register</button>
+        <button type="submit">Зарегестрироваться</button>
     </form>
-    <p>Already have an account? <a th:href="@{/auth/login}">Login</a></p>
+    <p>Уже есть аккаунт? <a th:href="@{/auth/login}">Вход</a></p>
 </div>
 </body>
 </html>

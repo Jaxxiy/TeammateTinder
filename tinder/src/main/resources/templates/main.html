@@ -1,10 +1,612 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevMatch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6c5ce7;
+            --secondary-color: #a29bfe;
+            --accent-color: #fd79a8;
+            --dark-color: #2d3436;
+            --light-color: #ffffff;
+            --success-color: #00b894;
+            --danger-color: #d63031;
+            --text-color: #2d3436;
+            --text-light: #636e72;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Навигационная панель */
+        .navbar {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 70%;
+        }
+
+        /* Кнопка выхода */
+        .logout-button {
+            position: absolute;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-button:hover {
+            background-color: #ff5252;
+        }
+
+        /* Основное содержимое */
+        .content {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        /* Карточка профиля */
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-image {
+            height: 350px;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+            z-index: 1;
+        }
+
+        /* Стили для галереи фото */
+        .photo-gallery {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .photo-gallery img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .photo-gallery img.active {
+            opacity: 1;
+        }
+
+        /* Стили для кнопок навигации галереи */
+        .prev-btn, .next-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            z-index: 2;
+            height: 100%; /* Увеличиваем кликабельную область */
+            width: 50%;   /* Увеличиваем кликабельную область */
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .prev-btn {
+            left: 0;
+            text-align: left;
+        }
+
+        .next-btn {
+            right: 0;
+            text-align: right;
+        }
+
+        .card-image:hover .prev-btn,
+        .card-image:hover .next-btn {
+            opacity: 1;
+        }
+
+        .prev-btn:hover, .next-btn:hover {
+             background: rgba(0, 0, 0, 0.7);
+        }
+
+        .prev-btn::before {
+            content: '❮❮';
+            display: block;
+            margin-left: 10px;
+        }
+
+         .next-btn::before {
+            content: '❯❯';
+            display: block;
+            margin-right: 10px;
+        }
+
+        /* Скрываем стрелки по умолчанию */
+        .prev-btn span, .next-btn span {
+            display: none;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        /* Стили для процента совпадения */
+        .match-percentage {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--success-color); /* Или другой подходящий цвет */
+            margin-bottom: 1rem;
+        }
+
+        .card p {
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Теги навыков */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .tag {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        /* Кнопки действий */
+        .actions {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1.5rem;
+        }
+
+        .action-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .dislike-btn {
+            color: var(--danger-color);
+        }
+
+        .view-btn {
+            color: var(--primary-color);
+        }
+
+        .like-btn {
+            color: var(--success-color);
+        }
+
+        /* Сообщение об отсутствии профилей */
+        .no-profiles {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+        }
+
+        .no-profiles h2 {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+            }
+
+            .card {
+                max-width: 100%;
+            }
+
+            .card-image {
+                height: 300px;
+            }
+        }
+
+        /* Стили для модального окна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .modal-content p {
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+        }
+
+        .modal-content button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-content button:hover {
+            background-color: var(--secondary-color);
+        }
+    </style>
 </head>
 <body>
+<nav class="navbar">
+    <ul class="nav-links">
+        <li><a th:href="@{/main}">Главная</a></li>
+        <li><a th:href="@{/chat}">Чат</a></li>
+        <li><a th:href="@{/matchers/{profileId}(profileId=${profileId})}">Мэтчи</a></li>
+        <li><a th:href="@{/likes/{profileId}(profileId=${profileId})}">Лайки</a></li>
+        <li><a th:href="@{/features/{profileId}(profileId=${profileId})}">Избранное</a></li>
+        <li><a th:href="@{/profile/{profileId}(profileId=${profileId})}">Профиль</a></li>
+    </ul>
+    <form th:action="@{/auth/logout}" method="post" style="display: inline;">
+        <button type="submit" class="logout-button">Выйти</button>
+    </form>
+</nav>
 
+<!-- Модальное окно для уведомления о матче -->
+<div id="matchModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2>🎉 It's a Match! 🎉</h2>
+        <p th:text="${matchMessage}">Match message</p>
+        <button onclick="closeMatchModal()">Close</button>
+    </div>
+</div>
+
+<div class="content">
+    <div th:if="${noProfiles}" class="no-profiles">
+        <h2>Профили закончились!</h2>
+        <p>Попробуйте изменить параметры поиска</p>
+    </div>
+    <div th:unless="${noProfiles}" id="profileCard" class="card">
+        <div class="card-image">
+            <div class="photo-gallery">
+                <img th:each="photo : ${photos}"
+                     th:src="@{/api/photos/} + ${photo.id}"
+                     alt="Profile photo"
+                     style="width: 100%; height: 100%; object-fit: cover; opacity: 0;" 
+                     th:classappend="${photoStat.index == 0} ? 'active' : ''">
+            </div>
+            <button class="prev-btn"></button>
+            <button class="next-btn"></button>
+        </div>
+        <div class="card-content">
+            <h2 th:text="${profile.name} + ', ' + ${profile.age}">Имя, Возраст</h2>
+            <div th:if="${matchPercentage != null}" class="match-percentage">
+                Совместимость: <span th:text="${matchPercentage}"></span>%
+            </div>
+            <p th:text="${profile.description}">Краткое описание профиля...</p>
+            <div class="tags">
+                <span th:each="skill : ${profile.skills}" class="tag" th:text="${skill.name}"></span>
+            </div>
+            <form id="skipForm" method="post"
+                  th:action="@{'/skip/' + ${profile.id} + '?index=' + ${index}}">
+                <input type="hidden" name="currentProfileId" th:value="${profileId}">
+            </form>
+
+            <form id="viewForm" method="get" th:action="@{'/profile/' + ${profile.id}}">
+                <input type="hidden" name="viewerId" th:value="${profileId}">
+            </form>
+
+            <form id="likeForm" method="post"
+                  th:action="@{'/like/' + ${profile.id} + '?index=' + ${index}}">
+                <input type="hidden" name="currentProfileId" th:value="${profileId}">
+            </form>
+
+            <div class="actions">
+                <button type="submit" form="skipForm" class="action-btn dislike-btn">✖</button>
+                <button type="submit" form="viewForm" class="action-btn view-btn">👁</button>
+                <button type="submit" form="likeForm" class="action-btn like-btn">❤</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        btn.addEventListener('click', async function(event) {
+            const formId = this.getAttribute('form');
+            const form = document.getElementById(formId);
+
+            // Анимация нажатия
+            this.style.transform = 'scale(0.9)';
+
+            // Prevent default form submission to handle it with fetch or redirect
+            event.preventDefault();
+
+            // Handle the 'View Profile' form separately as it's a GET request
+            if (form.id === 'viewForm') {
+                window.location.href = form.action;
+            } else { // Handle POST forms (like/skip) with fetch
+                 try {
+                    const response = await fetch(form.action, {
+                        method: form.method,
+                        body: new FormData(form)
+                    });
+
+                    if (response.ok) {
+                        // Плавная смена профиля
+                        document.getElementById('profileCard').style.opacity = 0;
+                        setTimeout(() => {
+                            // Navigate to the next profile after successful action
+                            window.location.href = '/main?index=' + (parseInt(new URLSearchParams(window.location.search).get('index') || '0') + 1);
+                        }, 300);
+                    } else {
+                         // Handle potential errors from the backend
+                         console.error('Action failed:', response.status, response.statusText);
+                         alert('Произошла ошибка при выполнении действия.');
+                         // Optionally, revert the button animation on error
+                         this.style.transform = 'scale(1.1)';
+                    }
+                } catch (error) {
+                    console.error('Fetch error:', error);
+                    alert('Произошла ошибка сети. Попробуйте еще раз.');
+                    // Optionally, revert the button animation on error
+                    this.style.transform = 'scale(1.1)';
+                } finally {
+                     // Animation revert moved inside catch or success if needed, removed from finally
+                 }
+            }
+
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const profileCard = document.getElementById('profileCard');
+        if (!profileCard) return; // Выходим, если карточка профиля отсутствует (например, нет профилей)
+
+        const gallery = profileCard.querySelector('.photo-gallery');
+        const photos = gallery ? gallery.querySelectorAll('img') : [];
+        const prevBtn = profileCard.querySelector('.prev-btn');
+        const nextBtn = profileCard.querySelector('.next-btn');
+        let currentPhotoIndex = 0;
+
+        // Функция для отображения фото по индексу
+        function showPhoto(index) {
+            photos.forEach((photo, i) => {
+                photo.classList.remove('active');
+                photo.style.opacity = 0; // Ensure other photos are hidden
+            });
+             if (photos[index]) {
+                 photos[index].classList.add('active');
+                 photos[index].style.opacity = 1; // Show the active photo
+             }
+        }
+
+        // Инициализация: показываем первое фото (уже сделано через th:classappend, но можно продублировать для надежности)
+        if (photos.length > 0) {
+             showPhoto(currentPhotoIndex);
+        }
+
+        // Обработчик для кнопки 'Next'
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                currentPhotoIndex = (currentPhotoIndex + 1) % photos.length;
+                showPhoto(currentPhotoIndex);
+            });
+        }
+
+        // Обработчик для кнопки 'Prev'
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length;
+                showPhoto(currentPhotoIndex);
+            });
+        }
+
+         // Скрываем кнопки, если нет фото или только одно фото
+         if (photos.length <= 1) {
+             if (prevBtn) prevBtn.style.display = 'none';
+             if (nextBtn) nextBtn.style.display = 'none';
+         }
+
+    });
+</script>
+
+<script>
+    // Показываем модальное окно при загрузке страницы, если есть сообщение о матче
+    window.onload = function() {
+        const matchMessage = document.querySelector('#matchModal p').textContent;
+        if (matchMessage && matchMessage.trim() !== '') {
+            document.getElementById('matchModal').style.display = 'flex';
+        }
+    };
+
+    function closeMatchModal() {
+        document.getElementById('matchModal').style.display = 'none';
+    }
+</script>
 </body>
 </html>
